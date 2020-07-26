@@ -1,20 +1,27 @@
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class ButtonList {
+public class ButtonBuilder {
+    JTextField textField;
+    public ButtonBuilder(JTextField textField) {
+        this.textField = textField;
+    }
+
     public ArrayList<JButton> createButtons() {
         ArrayList<JButton> buttons = new ArrayList<>();
 
         buttons.add(createCommandButton("CE"));
         buttons.add(createCommandButton("√"));
-        buttons.add(createCommandButton("<-"));
-        buttons.add(createCommandButton("÷"));
+        buttons.add(createCommandButton("del"));
+        buttons.add(createCommandButton("/"));
 
         buttons.add(createButton("1"));
         buttons.add(createButton("2"));
         buttons.add(createButton("3"));
-        buttons.add(createCommandButton("X"));
+        buttons.add(createCommandButton("x"));
 
         buttons.add(createButton("4"));
         buttons.add(createButton("5"));
@@ -34,19 +41,19 @@ public class ButtonList {
         return buttons;
     }
 
-    private JButton createEqualButton() {
+    private @NotNull JButton createEqualButton() {
         return this.createButton("=", Color.red);
     }
 
-    private JButton createCommandButton(String text) {
+    private @NotNull JButton createCommandButton(String text) {
         return this.createButton(text, Color.darkGray);
     }
 
-    private JButton createButton(String text) {
+    private @NotNull JButton createButton(String text) {
         return this.createButton(text, Color.black);
     }
 
-    private JButton createButton(String text, Color buttonColor) {
+    private @NotNull JButton createButton(String text, Color buttonColor) {
         JButton button = new JButton();
 
         button.setSize(61, 100);
@@ -55,6 +62,26 @@ public class ButtonList {
         button.setForeground(Color.white);
         button.setBackground(buttonColor);
         button.setBorderPainted(false);
+        button.addActionListener(actionEvent -> {
+            textField.setText(textField.getText() + button.getText());
+        });
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            Color currentBackgroundColor;
+            Color currentForegroundColor;
+
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                currentForegroundColor = button.getForeground();
+                currentBackgroundColor = button.getBackground();
+                button.setBackground(Color.white);
+                button.setForeground(Color.black);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setForeground(currentForegroundColor);
+                button.setBackground(currentBackgroundColor);
+            }
+        });
 
         return button;
     }

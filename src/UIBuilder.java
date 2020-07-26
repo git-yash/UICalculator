@@ -2,17 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UIBuilder {
+    public JTextField textField = new JTextField();
 
-    public JFrame createFrame() {
-        ButtonList buttons = new ButtonList();
+    public void createFrame() {
+        ButtonBuilder buttonBuilder = new ButtonBuilder(textField);
         JFrame frame = new JFrame("Calculator");
         JPanel panel = new JPanel();
-        JTextField textField = new JTextField();
 
-        for (int i = 0; i < buttons.createButtons().size(); i++) {
-            panel.add(buttons.createButtons().get(i));
-        }
+        buttonBuilder.createButtons().forEach(panel::add);
 
+        textField.setFont(new Font("Arial Black", Font.BOLD, 20));
+        textField.setHorizontalAlignment(JTextField.RIGHT);
         textField.setBounds(10, 10, 245, 50);
         textField.setEditable(false);
 
@@ -25,12 +25,8 @@ public class UIBuilder {
         frame.setResizable(false);
         frame.setSize(280, 435);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         frame.add(textField);
         frame.add(panel);
         frame.getContentPane().setBackground(Color.gray);
-
-        return frame;
     }
-
 }
