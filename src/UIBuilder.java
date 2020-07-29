@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UIBuilder {
-    public JTextField textField = new JTextField();
+    JTextField textField = new JTextField();
 
     public void createFrame() {
         ButtonBuilder buttonBuilder = new ButtonBuilder(textField);
