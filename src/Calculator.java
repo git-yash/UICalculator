@@ -1,8 +1,14 @@
+import org.jetbrains.annotations.NotNull;
+
 public class Calculator {
     private Double firstValue, secondValue;
     private ButtonOption specialCommand = ButtonOption.Empty;
 
     public Double calculate() {
+        if (firstValue == null || secondValue == null) {
+            return null;
+        }
+
         switch (specialCommand) {
             case Plus:
                 return firstValue + secondValue;
@@ -17,6 +23,12 @@ public class Calculator {
         }
     }
 
+    public void reset() {
+        firstValue = null;
+        secondValue = null;
+        specialCommand = ButtonOption.Empty;
+    }
+
     public void setValue(String value) {
         if (this.specialCommand.equals(ButtonOption.Empty)) {
             setFirstValue(value);
@@ -26,15 +38,23 @@ public class Calculator {
     }
 
     private void setFirstValue(String value) {
-        this.firstValue = Double.parseDouble(value);
+        if (value.isEmpty()) {
+            this.firstValue = null;
+        } else {
+            this.firstValue = Double.parseDouble(value);
+        }
     }
 
     private void setSecondValue(String value) {
-        this.secondValue = Double.parseDouble(value);
+        if (value.isEmpty()) {
+            this.secondValue = null;
+        } else {
+            this.secondValue = Double.parseDouble(value);
+        }
     }
 
-    public void setSpecialCommand(ButtonOption command) {
-        if(!command.equals(ButtonOption.Equal)) {
+    public void setSpecialCommand(@NotNull ButtonOption command) {
+        if (command.canSetSpecialCommand()) {
             this.specialCommand = command;
         }
     }

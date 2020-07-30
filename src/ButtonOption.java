@@ -15,8 +15,8 @@ public enum ButtonOption {
     Multiply("x"),
     Plus("+"),
     Minus("-"),
-    Square_Root("√"),
-    Clear("CE"),
+    Clear("C"),
+    ClearAll("CE"),
     Delete("del"),
     Equal("="),
     Empty("");
@@ -31,6 +31,18 @@ public enum ButtonOption {
         return this.command;
     }
 
+    public boolean canSetSpecialCommand() {
+        switch (this) {
+            case Division:
+            case Multiply:
+            case Plus:
+            case Minus:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public boolean isSpecial() {
         switch (this) {
             case Division:
@@ -38,8 +50,8 @@ public enum ButtonOption {
             case Plus:
             case Minus:
             case Delete:
+            case ClearAll:
             case Clear:
-            case Square_Root:
             case Equal:
                 return true;
             default:
@@ -60,6 +72,7 @@ public enum ButtonOption {
             case Nine:
             case Zero:
             case Decimal:
+            case Positive_Negative:
                 return true;
             default:
                 return false;

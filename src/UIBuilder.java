@@ -9,7 +9,7 @@ public class UIBuilder {
         JFrame frame = new JFrame("Calculator");
         JPanel panel = new JPanel();
 
-        buttonBuilder.createButtons().forEach(panel::add);
+        buttonBuilder.getButtons().forEach(panel::add);
 
         textField.setFont(new Font("Arial Black", Font.BOLD, 20));
         textField.setHorizontalAlignment(JTextField.RIGHT);
