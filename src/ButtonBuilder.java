@@ -45,15 +45,18 @@ public class ButtonBuilder {
         buttons.add(createEqualButton());
     }
 
-    private @NotNull JButton createEqualButton() {
+    private @NotNull
+    JButton createEqualButton() {
         return this.createButton(ButtonOption.Equal, Color.red);
     }
 
-    private @NotNull JButton createCommandButton(ButtonOption command) {
+    private @NotNull
+    JButton createCommandButton(ButtonOption command) {
         return this.createButton(command, Color.darkGray);
     }
 
-    private @NotNull JButton createButton(ButtonOption command) {
+    private @NotNull
+    JButton createButton(ButtonOption command) {
         return this.createButton(command, Color.black);
     }
 
@@ -71,74 +74,96 @@ public class ButtonBuilder {
         return text.isEmpty() ? "0" : text;
     }
 
-    private @NotNull Double getTextInputValue() {
+    private @NotNull
+    Double getTextInputValue() {
         String text = getTextInputText();
         return Double.parseDouble(text);
     }
 
-    private void setTextField(@NotNull String value) {
-        if (!value.isEmpty()) {
-            value = String.valueOf(Double.parseDouble(value) * 1);
+    private String trimValue(String value) {
+        if (value.isEmpty()) {
+            return value;
         }
+        return String.valueOf(Double.parseDouble(value) * 1);
+    }
 
-        if (value.endsWith(".0")) {
-            value = value.substring(0, value.length() - 2);
-        }
+    private void setTextField(@NotNull String value) {
+        value = this.trimValue(value);
+        value = trimSuffix(value);
         textField.setText(value);
         calculator.setValue(value);
     }
 
-    private void equalOperation() {
+    private String trimSuffix(String value) {
+        if (!value.endsWith(".0")) {
+            return value;
+        }
+        return value.substring(0, value.length() - 2);
+    }
+
+    private void processCalculation() {
         String answer = String.valueOf(calculator.calculate());
-        getTextInputValue();
         setTextField(answer);
         resetButtonHighlight();
     }
 
-    private void clearAllOperation() {
+    private void onPressClearAll() {
         calculator.reset();
         setTextField("");
         resetButtonHighlight();
     }
 
-    private void clearOperation() {
+    private void onPressClear() {
         calculator.setValue("");
         setTextField("");
     }
 
-    private void numberOperation(ButtonOption command) {
+    private void onPressDelete() {
+        String currentText = getTextInputText();
+        currentText = currentText.substring(0, currentText.length() - 1);
+        setTextField(currentText);
+    }
+
+    private void processSpecialCommand(ButtonOption command, JButton button) {
+        calculator.setSpecialCommand(command);
+        if (command.equals(ButtonOption.Equal)) {
+            processCalculation();
+        } else if (command.equals(ButtonOption.Delete)) {
+            onPressDelete();
+        } else if (command.equals(ButtonOption.ClearAll)) {
+            onPressClearAll();
+        } else if (command.equals(ButtonOption.Clear)) {
+            onPressClear();
+        } else {
+            setTextField("");
+            setButtonHighlight(button);
+        }
+    }
+
+    private String getToggledValue() {
+        return String.valueOf(getTextInputValue() * -1);
+    }
+
+    private void onPressNumber(ButtonOption command) {
         String newText;
         if (command == ButtonOption.Positive_Negative) {
-            newText = String.valueOf(getTextInputValue() * -1);
+            newText = this.getToggledValue();
         } else {
             newText = command.getText(getTextInputText());
         }
         setTextField(newText);
     }
 
-    private void onButtonPress(@NotNull ButtonOption command, JButton button) {
-        if (command.isSpecial()) {
-            calculator.setSpecialCommand(command);
-            if (command.equals(ButtonOption.Equal)) {
-                equalOperation();
-            } else if (command.equals(ButtonOption.Delete)) {
-                String currentText = getTextInputText();
-                currentText = currentText.substring(0, currentText.length() - 1);
-                setTextField(currentText);
-            } else if (command.equals(ButtonOption.ClearAll)) {
-                clearAllOperation();
-            } else if (command.equals(ButtonOption.Clear)) {
-                clearOperation();
-            } else {
-                setTextField("");
-                setButtonHighlight(button);
-            }
-        } else if (command.isNumber()) {
-            numberOperation(command);
+    private void onPressButton(@NotNull ButtonOption command, JButton button) {
+        if (command.isNumber()) {
+            onPressNumber(command);
+        } else {
+            processSpecialCommand(command, button);
         }
     }
 
-    private @NotNull JButton createButton(@NotNull ButtonOption command, Color buttonColor) {
+    private @NotNull
+    JButton createButton(@NotNull ButtonOption command, Color buttonColor) {
         JButton button = new JButton();
 
         button.setSize(61, 100);
@@ -147,26 +172,7 @@ public class ButtonBuilder {
         button.setForeground(Color.white);
         button.setBackground(buttonColor);
         button.setBorderPainted(false);
-        button.addActionListener(actionEvent -> onButtonPress(command, button));
-
-//        button.addMouseListener(new java.awt.event.MouseAdapter() {
-//            Color currentBackgroundColor;
-//            Color currentForegroundColor;
-//
-//            public void mouseEntered(java.awt.event.MouseEvent evt) {
-//                currentForegroundColor = button.getForeground();
-//                currentBackgroundColor = button.getBackground();
-//                if (button.getForeground() != Color.red) {
-//                    button.setBackground(Color.white);
-//                    button.setForeground(Color.black);
-//                }
-//            }
-//
-//            public void mouseExited(java.awt.event.MouseEvent evt) {
-//                button.setForeground(currentForegroundColor);
-//                button.setBackground(currentBackgroundColor);
-//            }
-//        });
+        button.addActionListener(actionEvent -> onPressButton(command, button));
 
         return button;
     }

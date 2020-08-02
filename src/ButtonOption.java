@@ -31,28 +31,12 @@ public enum ButtonOption {
         return this.command;
     }
 
-    public boolean canSetSpecialCommand() {
+    public boolean isTwoValueCalculationCommand() {
         switch (this) {
             case Division:
             case Multiply:
             case Plus:
             case Minus:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public boolean isSpecial() {
-        switch (this) {
-            case Division:
-            case Multiply:
-            case Plus:
-            case Minus:
-            case Delete:
-            case ClearAll:
-            case Clear:
-            case Equal:
                 return true;
             default:
                 return false;

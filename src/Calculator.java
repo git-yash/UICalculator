@@ -54,7 +54,7 @@ public class Calculator {
     }
 
     public void setSpecialCommand(@NotNull ButtonOption command) {
-        if (command.canSetSpecialCommand()) {
+        if (command.isTwoValueCalculationCommand()) {
             this.specialCommand = command;
         }
     }
