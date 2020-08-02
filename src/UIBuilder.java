@@ -29,4 +29,5 @@ public class UIBuilder {
         frame.add(panel);
         frame.getContentPane().setBackground(Color.gray);
     }
+
 }

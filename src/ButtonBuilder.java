@@ -61,7 +61,7 @@ public class ButtonBuilder {
         this.getButtons().forEach(button -> button.setForeground(Color.white));
     }
 
-    private void setButtonHighlight(JButton button) {
+    private void setButtonHighlight(@NotNull JButton button) {
         resetButtonHighlight();
         button.setForeground(Color.red);
     }
@@ -71,12 +71,12 @@ public class ButtonBuilder {
         return text.isEmpty() ? "0" : text;
     }
 
-    private Double getTextInputValue() {
+    private @NotNull Double getTextInputValue() {
         String text = getTextInputText();
         return Double.parseDouble(text);
     }
 
-    private void setTextField(String value) {
+    private void setTextField(@NotNull String value) {
         if (!value.isEmpty()) {
             value = String.valueOf(Double.parseDouble(value) * 1);
         }
@@ -88,41 +88,57 @@ public class ButtonBuilder {
         calculator.setValue(value);
     }
 
-    private void onButtonPress(ButtonOption command, JButton button) {
+    private void equalOperation() {
+        String answer = String.valueOf(calculator.calculate());
+        getTextInputValue();
+        setTextField(answer);
+        resetButtonHighlight();
+    }
+
+    private void clearAllOperation() {
+        calculator.reset();
+        setTextField("");
+        resetButtonHighlight();
+    }
+
+    private void clearOperation() {
+        calculator.setValue("");
+        setTextField("");
+    }
+
+    private void numberOperation(ButtonOption command) {
+        String newText;
+        if (command == ButtonOption.Positive_Negative) {
+            newText = String.valueOf(getTextInputValue() * -1);
+        } else {
+            newText = command.getText(getTextInputText());
+        }
+        setTextField(newText);
+    }
+
+    private void onButtonPress(@NotNull ButtonOption command, JButton button) {
         if (command.isSpecial()) {
             calculator.setSpecialCommand(command);
             if (command.equals(ButtonOption.Equal)) {
-                String answer = String.valueOf(calculator.calculate());
-                getTextInputValue();
-                setTextField(answer);
-                resetButtonHighlight();
+                equalOperation();
             } else if (command.equals(ButtonOption.Delete)) {
                 String currentText = getTextInputText();
                 currentText = currentText.substring(0, currentText.length() - 1);
                 setTextField(currentText);
             } else if (command.equals(ButtonOption.ClearAll)) {
-                calculator.reset();
-                setTextField("");
-                resetButtonHighlight();
+                clearAllOperation();
             } else if (command.equals(ButtonOption.Clear)) {
-                calculator.setValue("");
-                setTextField("");
+                clearOperation();
             } else {
                 setTextField("");
                 setButtonHighlight(button);
             }
         } else if (command.isNumber()) {
-            String newText;
-            if (command == ButtonOption.Positive_Negative) {
-                newText = String.valueOf(getTextInputValue() * -1);
-            } else {
-                newText = command.getText(getTextInputText());
-            }
-            setTextField(newText);
+            numberOperation(command);
         }
     }
 
-    private @NotNull JButton createButton(ButtonOption command, Color buttonColor) {
+    private @NotNull JButton createButton(@NotNull ButtonOption command, Color buttonColor) {
         JButton button = new JButton();
 
         button.setSize(61, 100);
