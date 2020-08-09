@@ -45,18 +45,15 @@ public class ButtonBuilder {
         buttons.add(createEqualButton());
     }
 
-    private @NotNull
-    JButton createEqualButton() {
+    private @NotNull JButton createEqualButton() {
         return this.createButton(ButtonOption.Equal, Color.red);
     }
 
-    private @NotNull
-    JButton createCommandButton(ButtonOption command) {
+    private @NotNull JButton createCommandButton(ButtonOption command) {
         return this.createButton(command, Color.darkGray);
     }
 
-    private @NotNull
-    JButton createButton(ButtonOption command) {
+    private @NotNull JButton createButton(ButtonOption command) {
         return this.createButton(command, Color.black);
     }
 
@@ -74,8 +71,7 @@ public class ButtonBuilder {
         return text.isEmpty() ? "0" : text;
     }
 
-    private @NotNull
-    Double getTextInputValue() {
+    private @NotNull Double getTextInputValue() {
         String text = getTextInputText();
         return Double.parseDouble(text);
     }
@@ -101,12 +97,6 @@ public class ButtonBuilder {
         return value.substring(0, value.length() - 2);
     }
 
-    private void processCalculation() {
-        String answer = String.valueOf(calculator.calculate());
-        setTextField(answer);
-        resetButtonHighlight();
-    }
-
     private void onPressClearAll() {
         calculator.reset();
         setTextField("");
@@ -126,16 +116,31 @@ public class ButtonBuilder {
 
     private void processSpecialCommand(ButtonOption command, JButton button) {
         calculator.setSpecialCommand(command);
-        if (command.equals(ButtonOption.Equal)) {
-            processCalculation();
-        } else if (command.equals(ButtonOption.Delete)) {
+        if (command.equals(ButtonOption.Delete)) {
             onPressDelete();
+            return;
         } else if (command.equals(ButtonOption.ClearAll)) {
             onPressClearAll();
+            return;
         } else if (command.equals(ButtonOption.Clear)) {
             onPressClear();
+            return;
+        }
+
+        if (command.equals(ButtonOption.Equal)) {
+            String answer = String.valueOf(calculator.calculate());
+            setTextField(answer);
+            resetButtonHighlight();
         } else {
-            setTextField("");
+            if (calculator.canCalculate()) {
+                String answer = String.valueOf(calculator.calculate());
+                calculator.reset();
+                setTextField(answer);
+                calculator.setSpecialCommand(command);
+            }
+            else {
+                textField.setText("");
+            }
             setButtonHighlight(button);
         }
     }
@@ -145,13 +150,15 @@ public class ButtonBuilder {
     }
 
     private void onPressNumber(ButtonOption command) {
-        String newText;
-        if (command == ButtonOption.Positive_Negative) {
-            newText = this.getToggledValue();
-        } else {
-            newText = command.getText(getTextInputText());
+        if(calculator.shouldClear()) {
+            textField.setText("");
         }
-        setTextField(newText);
+
+        if (command == ButtonOption.Positive_Negative) {
+            setTextField(this.getToggledValue());
+        } else {
+            setTextField(command.getText(getTextInputText()));
+        }
     }
 
     private void onPressButton(@NotNull ButtonOption command, JButton button) {
@@ -162,8 +169,7 @@ public class ButtonBuilder {
         }
     }
 
-    private @NotNull
-    JButton createButton(@NotNull ButtonOption command, Color buttonColor) {
+    private @NotNull JButton createButton(@NotNull ButtonOption command, Color buttonColor) {
         JButton button = new JButton();
 
         button.setSize(61, 100);

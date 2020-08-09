@@ -23,6 +23,14 @@ public class Calculator {
         }
     }
 
+    public boolean hasSpecialCommand() {
+        return specialCommand != ButtonOption.Empty;
+    }
+
+    public boolean canCalculate() {
+        return firstValue != null && secondValue != null && specialCommand != ButtonOption.Empty;
+    }
+
     public void reset() {
         firstValue = null;
         secondValue = null;
@@ -57,5 +65,9 @@ public class Calculator {
         if (command.isTwoValueCalculationCommand()) {
             this.specialCommand = command;
         }
+    }
+
+    public boolean shouldClear() {
+        return firstValue != null && hasSpecialCommand() && secondValue == null;
     }
 }
